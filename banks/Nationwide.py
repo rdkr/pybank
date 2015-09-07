@@ -100,15 +100,15 @@ class Nationwide(Thread):
             accInfo = soup.find(class_ = 'stage-head-ac-info')
             accNumbers = accInfo.find('h2').get_text()
             
-            accName = accNumbers.splitlines()[3].lstrip()
-            accSort = accNumbers.splitlines()[4].lstrip().split()[0]
-            accNumber = accNumbers.splitlines()[4].lstrip().split()[1]
-            
-            accBalance = self.get_num(accInfo.find_all('dd')[0].get_text())
-            accAvailable = self.get_num(accInfo.find_all('dd')[1].get_text())
+            acc = {}
 
-            acc = account('nationwide', accSort, accNumber, accName, accBalance, accAvailable)
+            acc['name'] = accNumbers.splitlines()[3].lstrip()
+            acc['sort'] = accNumbers.splitlines()[4].lstrip().split()[0]
+            acc['number'] = accNumbers.splitlines()[4].lstrip().split()[1]
             
+            acc['balance'] = self.get_num(accInfo.find_all('dd')[0].get_text())
+            acc['available'] = self.get_num(accInfo.find_all('dd')[1].get_text())
+
             self.accounts.append(acc)
 
             # download transaction files
@@ -119,7 +119,7 @@ class Nationwide(Thread):
 
             r = s.post('https://onlinebanking.nationwide.co.uk/Transactions/FullStatement/DownloadFS', data=d)
 
-            filename = time.strftime('%Y%m%d') + '-' + accSort.replace('-', '') + '-' + accNumber + '.ofx'
+            filename = time.strftime('%Y%m%d') + '-' + acc['sort'] + '-' + acc['number'] + '.ofx'
             file = open(filename, 'w')
             file.write(r.text)
             file.close()

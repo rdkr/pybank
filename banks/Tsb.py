@@ -96,14 +96,14 @@ class Tsb(Thread):
 
             accountNumbers = soup.find(class_ = 'numbers').get_text().split(', ')
             
-            accName = soup.find('h1').get_text()
-            accSort = accountNumbers[0].replace('-', '')
-            accNumber = accountNumbers[1]
+            acc = {}
 
-            accBalance = self.get_num(soup.find(class_ = 'balance').get_text())
-            accAvailable = self.get_num(soup.find(class_ = 'manageMyAccountsFaShowMeAnchor {bubble : \'fundsAvailable\', pointer : \'top\'}').parent.get_text())
-            
-            acc = account('tsb', accSort, accNumber, accName, accBalance, accAvailable)
+            acc['name'] = soup.find('h1').get_text()
+            acc['sort'] = accountNumbers[0].replace('-', '')
+            acc['number'] = accountNumbers[1]
+
+            acc['balance'] = self.get_num(soup.find(class_ = 'balance').get_text())
+            acc['available'] = self.get_num(soup.find(class_ = 'manageMyAccountsFaShowMeAnchor {bubble : \'fundsAvailable\', pointer : \'top\'}').parent.get_text())
             
             self.accounts.append(acc)
 
@@ -133,7 +133,7 @@ class Tsb(Thread):
             
             r = s.post('https://secure.tsb.co.uk/personal/a/viewproductdetails/m44_exportstatement_fallback.jsp', data=d)
 
-            filename = time.strftime('%Y%m%d') + '-' + accSort + '-' + accNumber + '.qif'
+            filename = time.strftime('%Y%m%d') + '-' + acc['sort'] + '-' + acc['number'] + '.qif'
             file = open(filename, 'w')
             file.write(r.text)
             file.close()

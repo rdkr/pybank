@@ -37,4 +37,4 @@ for accProviderThread in accProviderThreads:
     accProviderThread.join()
     accounts.extend(accProviderThread.get_accounts())
 
-#print(tabulate(accounts))
+print(tabulate(accounts, headers="keys"))
