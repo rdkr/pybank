@@ -1,4 +1,4 @@
-#pip install pyyaml appdirs requests beautifulsoup4
+#pip install pyyaml appdirs requests beautifulsoup4 tabulate
 
 import threading
 
@@ -6,7 +6,9 @@ import threading
 import yaml
 from appdirs import AppDirs
 
-import account
+from tabulate import tabulate
+
+from account import account
 
 # get config from user config file 
 
@@ -20,34 +22,19 @@ accounts = []
 
 accProviderThreads = []
 
-
 for accProvider, accProviderDetails in config.items():
 
-    print('1')
     exec( 'from banks.' + accProvider + ' import ' + accProvider )
-    values = []
     
-    for key, value in accProviderDetails.items():
-        values.append('\'' + value + '\'')
+    accProviderThread = eval( accProvider + '()')
+    accProviderThread.set_login_params(accProviderDetails)
 
-    accProviderThread = eval( accProvider + '(' + ','.join(values) + ')')
     accProviderThreads.append(accProviderThread)
     accProviderThread.start()
-
 
 for accProviderThread in accProviderThreads:
     print(accProviderThread)    
     accProviderThread.join()
     accounts.extend(accProviderThread.get_accounts())
 
-
-print(accounts)
-    
-    #print(acc)
-
-        #acc = print    ( accProvider + '.' + accProvider + '(' + accDetails + ')')
-# tsb:
-
-
-#threading.Thread(target = tsb.do).start()
-#threading.Thread(target = nationwide.do).start()accProvider + '.' + 
+#print(tabulate(accounts))

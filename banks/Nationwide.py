@@ -3,19 +3,21 @@ import requests
 import time
 from bs4 import BeautifulSoup
 
-import account
+from account import account
 
 class Nationwide(Thread):
 
     accounts = []
 
-    def __init__(self, user, pswd, info):
+    def __init__(self):
 
         Thread.__init__(self)
 
-        self.user = user
-        self.pswd = pswd
-        self.info = info
+    def set_login_params(self, login_dict):
+
+        self.user = login_dict['user']
+        self.pswd = login_dict['pswd']
+        self.info = login_dict['info']
 
     def run(self):
 
@@ -28,7 +30,7 @@ class Nationwide(Thread):
             r = self.main_page(s, r)
         except:
             print('EXCEPT IN NATIONWIDE')
-            self.accounts.append(account.account('nationwide', 'error', 'error', 'error', 'error', 'error'))
+            self.accounts.append(account('nationwide', 'error', 'error', 'error', 'error', 'error'))
 
     def get_accounts(self):
         return self.accounts
@@ -88,11 +90,11 @@ class Nationwide(Thread):
         
         soup = BeautifulSoup(r.text, 'html.parser')
 
-        for accText in soup.find_all(class_ = 'account-row'):
+        for accountEntry in soup.find_all(class_ = 'account-row'):
 
             # get account details and add to accounts list
 
-            r = s.get('https://onlinebanking.nationwide.co.uk' + accText.find(class_ = 'acLink')['href'])
+            r = s.get('https://onlinebanking.nationwide.co.uk' + accountEntry.find(class_ = 'acLink')['href'])
             soup = BeautifulSoup(r.text, 'html.parser')
 
             accInfo = soup.find(class_ = 'stage-head-ac-info')
@@ -105,7 +107,7 @@ class Nationwide(Thread):
             accBalance = self.get_num(accInfo.find_all('dd')[0].get_text())
             accAvailable = self.get_num(accInfo.find_all('dd')[1].get_text())
 
-            acc = account.account('nationwide', accSort, accNumber, accName, accBalance, accAvailable)
+            acc = account('nationwide', accSort, accNumber, accName, accBalance, accAvailable)
             
             self.accounts.append(acc)
 
@@ -122,10 +124,5 @@ class Nationwide(Thread):
             file.write(r.text)
             file.close()
 
-            self.accounts.append(acc)
-
     def get_num(self, x): # http://stackoverflow.com/a/10365472 #TODO static method?
         return float(''.join(ele for ele in x if ele.isdigit() or ele == '.'))
-
-
-        

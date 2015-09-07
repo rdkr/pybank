@@ -3,19 +3,21 @@ import requests
 import time
 from bs4 import BeautifulSoup
 
-import account
+from account import account
 
 class Tsb(Thread):
 
     accounts = []
 
-    def __init__(self, user, pswd, info):
+    def __init__(self):
 
         Thread.__init__(self)
 
-        self.user = user
-        self.pswd = pswd
-        self.info = info
+    def set_login_params(self, login_dict):
+
+        self.user = login_dict['user']
+        self.pswd = login_dict['pswd']
+        self.info = login_dict['info']
 
     def run(self):
 
@@ -30,7 +32,7 @@ class Tsb(Thread):
             print('EXCEPT IN TSB')
             import traceback
             traceback.print_exc()
-            self.accounts.append(account.account('tsb', 'error', 'error', 'error', 'error', 'error'))
+            self.accounts.append(account('tsb', 'error', 'error', 'error', 'error', 'error'))
 
     def get_accounts(self):
         return self.accounts
@@ -68,8 +70,6 @@ class Tsb(Thread):
         char2label = "frmentermemorableinformation1:strEnterMemorableInformation_memInfo2"
         char3label = "frmentermemorableinformation1:strEnterMemorableInformation_memInfo3"
 
-        print(soup)
-
         # find the requested character index from login page (index starts at 1)
         char = [ int(''.join(c for c in soup.find('label',{'for':char1label}).text if c.isdigit())) \
                 ,int(''.join(c for c in soup.find('label',{'for':char2label}).text if c.isdigit())) \
@@ -87,11 +87,11 @@ class Tsb(Thread):
         
         soup = BeautifulSoup(r.text, 'html.parser')
       
-        for account in soup.find(id = 'lstAccLst').findAll('li', recursive=False):
+        for accountEntry in soup.find(id = 'lstAccLst').findAll('li', recursive=False):
 
             # get account details and add to accounts list
 
-            r = s.get('https://secure.tsb.co.uk' + account.find('h2').a['href'])
+            r = s.get('https://secure.tsb.co.uk' + accountEntry.find('h2').a['href'])
             soup = BeautifulSoup(r.text, 'html.parser')
 
             accountNumbers = soup.find(class_ = 'numbers').get_text().split(', ')
@@ -100,10 +100,10 @@ class Tsb(Thread):
             accSort = accountNumbers[0].replace('-', '')
             accNumber = accountNumbers[1]
 
-            accBalance = get_num(soup.find(class_ = 'balance').get_text())
-            accAvailable = get_num(soup.find(class_ = 'manageMyAccountsFaShowMeAnchor {bubble : \'fundsAvailable\', pointer : \'top\'}').parent.get_text())
+            accBalance = self.get_num(soup.find(class_ = 'balance').get_text())
+            accAvailable = self.get_num(soup.find(class_ = 'manageMyAccountsFaShowMeAnchor {bubble : \'fundsAvailable\', pointer : \'top\'}').parent.get_text())
             
-            acc = account.account('nationwide', accSort, accNumber, accName, accBalance, accAvailable)
+            acc = account('tsb', accSort, accNumber, accName, accBalance, accAvailable)
             
             self.accounts.append(acc)
 
@@ -133,18 +133,10 @@ class Tsb(Thread):
             
             r = s.post('https://secure.tsb.co.uk/personal/a/viewproductdetails/m44_exportstatement_fallback.jsp', data=d)
 
-            filename = time.strftime('%Y%m%d') + '-' + accountSort + '-' + accountNumber + '.qif'
+            filename = time.strftime('%Y%m%d') + '-' + accSort + '-' + accNumber + '.qif'
             file = open(filename, 'w')
             file.write(r.text)
             file.close()
 
-            summary.append([accountSort, accountNumber, accountBalance, accountAvailable, filename, accountName])
-            
-        return summary
-
     def get_num(self, x): # http://stackoverflow.com/a/10365472
         return float(''.join(ele for ele in x if ele.isdigit() or ele == '.'))
-
-    # userID = 'neelradhakrishnan'
-    # password = '8rXuehXX1iiChAH'
-    # info = 'ela18121994'
