@@ -30,7 +30,7 @@ def print_table():
 
         totalAvailable += acc['available']
 
-    table.append(['', '', '', totalAvailable])
+    table.append(['TOTAL', '', totalAvailable])
 
     print()
     print(tabulate(table, headers="firstrow"))
