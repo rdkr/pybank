@@ -2,8 +2,7 @@ from threading import Thread
 import requests
 import time
 from bs4 import BeautifulSoup
-
-from account import account
+from get_num import get_num
 
 class Nationwide(Thread):
 
@@ -29,8 +28,9 @@ class Nationwide(Thread):
             r = self.login2(s, r)
             r = self.main_page(s, r)
         except:
-            print('EXCEPT IN NATIONWIDE')
-            self.accounts.append(account('nationwide', 'error', 'error', 'error', 'error', 'error'))
+            import traceback
+            traceback.print_exc()
+            self.accounts.append({'name': 'error'})
 
     def get_accounts(self):
         return self.accounts
@@ -100,14 +100,14 @@ class Nationwide(Thread):
             accInfo = soup.find(class_ = 'stage-head-ac-info')
             accNumbers = accInfo.find('h2').get_text()
             
-            acc = {}
+            acc = {'bank': 'Nationwide'}
 
             acc['name'] = accNumbers.splitlines()[3].lstrip()
             acc['sort'] = accNumbers.splitlines()[4].lstrip().split()[0]
             acc['number'] = accNumbers.splitlines()[4].lstrip().split()[1]
             
-            acc['balance'] = self.get_num(accInfo.find_all('dd')[0].get_text())
-            acc['available'] = self.get_num(accInfo.find_all('dd')[1].get_text())
+            acc['balance'] = get_num(accInfo.find_all('dd')[0].get_text())
+            acc['available'] = get_num(accInfo.find_all('dd')[1].get_text())
 
             self.accounts.append(acc)
 
@@ -123,6 +123,3 @@ class Nationwide(Thread):
             file = open(filename, 'w')
             file.write(r.text)
             file.close()
-
-    def get_num(self, x): # http://stackoverflow.com/a/10365472 #TODO static method?
-        return float(''.join(ele for ele in x if ele.isdigit() or ele == '.'))

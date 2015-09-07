@@ -2,8 +2,7 @@ from threading import Thread
 import requests
 import time
 from bs4 import BeautifulSoup
-
-from account import account
+from get_num import get_num
 
 class Tsb(Thread):
 
@@ -29,10 +28,9 @@ class Tsb(Thread):
             r = self.login2(s, r)
             r = self.main_page(s, r)
         except:
-            print('EXCEPT IN TSB')
             import traceback
             traceback.print_exc()
-            self.accounts.append(account('tsb', 'error', 'error', 'error', 'error', 'error'))
+            self.accounts.append({'name': 'error'})
 
     def get_accounts(self):
         return self.accounts
@@ -96,14 +94,14 @@ class Tsb(Thread):
 
             accountNumbers = soup.find(class_ = 'numbers').get_text().split(', ')
             
-            acc = {}
+            acc = {'bank': 'TSB'}
 
             acc['name'] = soup.find('h1').get_text()
             acc['sort'] = accountNumbers[0].replace('-', '')
             acc['number'] = accountNumbers[1]
 
-            acc['balance'] = self.get_num(soup.find(class_ = 'balance').get_text())
-            acc['available'] = self.get_num(soup.find(class_ = 'manageMyAccountsFaShowMeAnchor {bubble : \'fundsAvailable\', pointer : \'top\'}').parent.get_text())
+            acc['balance'] = get_num(soup.find(class_ = 'balance').get_text())
+            acc['available'] = get_num(soup.find(class_ = 'manageMyAccountsFaShowMeAnchor {bubble : \'fundsAvailable\', pointer : \'top\'}').parent.get_text())
             
             self.accounts.append(acc)
 
@@ -137,6 +135,3 @@ class Tsb(Thread):
             file = open(filename, 'w')
             file.write(r.text)
             file.close()
-
-    def get_num(self, x): # http://stackoverflow.com/a/10365472
-        return float(''.join(ele for ele in x if ele.isdigit() or ele == '.'))

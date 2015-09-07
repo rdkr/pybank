@@ -8,7 +8,35 @@ from appdirs import AppDirs
 
 from tabulate import tabulate
 
-from account import account
+def print_table():
+
+    table = [['bank', 'name', 'available']] # 'sort', 'number',
+
+    totalAvailable = 0.0
+
+    for acc in accounts:
+
+        row = []
+
+        # for each table header item, insert entry from each account dictionary to row
+        for entry in table[0]:
+            if entry in acc:
+                row.append(acc[entry])
+            else:
+                row.append('')       
+            
+
+        table.append(row)
+
+        totalAvailable += acc['available']
+
+    table.append(['', '', '', totalAvailable])
+
+    print()
+    print(tabulate(table, headers="firstrow"))
+    print()
+
+
 
 # get config from user config file 
 
@@ -33,8 +61,7 @@ for accProvider, accProviderDetails in config.items():
     accProviderThread.start()
 
 for accProviderThread in accProviderThreads:
-    print(accProviderThread)    
     accProviderThread.join()
     accounts.extend(accProviderThread.get_accounts())
 
-print(tabulate(accounts, headers="keys"))
+print_table()
