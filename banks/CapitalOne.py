@@ -2,7 +2,7 @@ from threading import Thread
 import requests
 import time
 from bs4 import BeautifulSoup
-from get_num import get_num
+from utils import get_num
 
 class CapitalOne(Thread):
 
