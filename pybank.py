@@ -16,8 +16,6 @@ accountsConfigFilename = os.path.join(dirs.user_config_dir, 'accounts.yml')
 
 def get_accounts():
 
-
-
     accounts = []
     accProviderThreads = []
 
@@ -37,9 +35,9 @@ def get_accounts():
         accProviderThread.join()
         accounts.extend(accProviderThread.get_accounts())
 
-    click.echo(_table()
+    print_table()
 
-def click.echo(_table():
+def print_table():
 
     totalAvailable = 0.0
 
@@ -74,26 +72,28 @@ def click.echo(_table():
     click.echo(tabulate(table, headers="firstrow"))
     click.echo()
 
-@click.command()
-@click.argument('command', required=False)
-def cli(command):
+@click.group()
+@click.option('--verbose', is_flag=True, help='Runs in vebrose mode')
+def cli(verbose):
+    pass
 
-    if command == 'setup':
-        setup()
-    else:
-
-        try:
-            settingsConfig = yaml.safe_load(open(settingsConfigFilename))
-        except:
-            click.echo('Could not open settings config (' + settingsConfigFilename + ')')
-
-        try:
-            accountsConfig = yaml.safe_load(open(accountsConfigFilename))
-        except:
-            click.echo('Could not open accounts config (' + accountsConfigFilename + ')')
-
+@cli.command()
 def setup():
     click.echo('setup')
+
+    # if command == 'setup':
+    #     setup()
+    # else:
+
+    #     try:
+    #         settingsConfig = yaml.safe_load(open(settingsConfigFilename))
+    #     except:
+    #         click.echo('Could not open settings config (' + settingsConfigFilename + ')')
+
+    #     try:
+    #         accountsConfig = yaml.safe_load(open(accountsConfigFilename))
+    #     except:
+    #         click.echo('Could not open accounts config (' + accountsConfigFilename + ')')
 
 if __name__ == '__main__':
     cli()
