@@ -4,13 +4,22 @@ import yaml # config file
 import click # cli
 
 from appdirs import AppDirs # config file
-from tabulate import tabulate # print nice table
-from operator import itemgetter
+from tabulate import tabulate # click.echo( nice table
+import os
 
 #pip install pyyaml appdirs requests beautifulsoup4 tabulate click
 
-@click.command()
-def main():
+dirs = AppDirs("pybank", "rdkr.uk")
+settingsConfigFilename = os.path.join(dirs.user_config_dir, 'settings.yml')
+accountsConfigFilename = os.path.join(dirs.user_config_dir, 'accounts.yml')
+
+
+def get_accounts():
+
+
+
+    accounts = []
+    accProviderThreads = []
 
     # set up lists for accounts and account providers
 
@@ -28,9 +37,9 @@ def main():
         accProviderThread.join()
         accounts.extend(accProviderThread.get_accounts())
 
-    print_table()
+    click.echo(_table()
 
-def print_table():
+def click.echo(_table():
 
     totalAvailable = 0.0
 
@@ -61,15 +70,30 @@ def print_table():
     table.extend(sorted(body, key=itemgetter(0)))
     table.append(footer)
 
-    print()
-    print(tabulate(table, headers="firstrow"))
-    print()
+    click.echo(()
+    click.echo((tabulate(table, headers="firstrow"))
+    click.echo(()
 
-accounts = []
-accProviderThreads = []
+@click.command()
+@click.argument('command', required=False)
+def cli(command):
 
-dirs = AppDirs("pybank", "rdkr.uk")
-config = yaml.safe_load(open(dirs.user_config_dir + '/config.yml'))
+    if command == 'setup':
+        setup()
+    else:
+
+        try:
+            settingsConfig = yaml.safe_load(open(settingsConfigFilename))
+        except:
+            click.echo('Could not open settings config (' + settingsConfigFilename + ')')
+
+        try:
+            accountsConfig = yaml.safe_load(open(accountsConfigFilename))
+        except:
+            click.echo(('Could not open accounts config (' + accountsConfigFilename + ')')
+
+def setup():
+    click.echo(('setup')
 
 if __name__ == '__main__':
-    main()
+    cli()
