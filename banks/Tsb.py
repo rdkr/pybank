@@ -117,7 +117,8 @@ class Tsb(Thread):
             now = time.localtime(time.time())
             yearAgo = time.localtime(time.time() - 6570000) # ~ 2.5 months year ago
 
-            d['frmTest:rdoDateRange'] = '1'
+            # will download current view if 0, past 2.5 months if 1
+            d['frmTest:rdoDateRange'] = '0'
             
             d['frmTest:dtSearchFromDate'] = time.strftime('%d', yearAgo) 
             d['frmTest:dtSearchFromDate.month'] = time.strftime('%m', yearAgo) 
