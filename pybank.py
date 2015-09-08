@@ -70,9 +70,9 @@ def click.echo(_table():
     table.extend(sorted(body, key=itemgetter(0)))
     table.append(footer)
 
-    click.echo(()
-    click.echo((tabulate(table, headers="firstrow"))
-    click.echo(()
+    click.echo()
+    click.echo(tabulate(table, headers="firstrow"))
+    click.echo()
 
 @click.command()
 @click.argument('command', required=False)
@@ -90,10 +90,10 @@ def cli(command):
         try:
             accountsConfig = yaml.safe_load(open(accountsConfigFilename))
         except:
-            click.echo(('Could not open accounts config (' + accountsConfigFilename + ')')
+            click.echo('Could not open accounts config (' + accountsConfigFilename + ')')
 
 def setup():
-    click.echo(('setup')
+    click.echo('setup')
 
 if __name__ == '__main__':
     cli()
