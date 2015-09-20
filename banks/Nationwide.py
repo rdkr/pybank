@@ -30,7 +30,15 @@ class Nationwide(Thread):
         except:
             import traceback
             traceback.print_exc()
-            self.accounts.append({'name': 'error'})
+
+            acc = {'bank': 'Nationwide'}
+
+            acc['name'] = 'error'
+
+            acc['balance'] = 0
+            acc['available'] = 0
+
+            self.accounts.append(acc)
 
     def get_accounts(self):
         return self.accounts

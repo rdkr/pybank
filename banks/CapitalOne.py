@@ -28,7 +28,15 @@ class CapitalOne(Thread):
         except:
             import traceback
             traceback.print_exc()
-            self.accounts.append({'name': 'error'})
+
+            acc = {'bank': 'CapitalOne'}
+
+            acc['name'] = 'error'
+
+            acc['balance'] = 0
+            acc['available'] = 0
+
+            self.accounts.append(acc)
 
     def get_accounts(self):
         return self.accounts
@@ -70,7 +78,7 @@ class CapitalOne(Thread):
         
         soup = BeautifulSoup(r.text, 'html.parser')
      
-        acc = {'bank': 'Capital One'}
+        acc = {'bank': 'CapitalOne'}
 
         acc['original_available'] = get_num(soup.find(text = 'Available to spend').parent.parent.find('div').text)
         acc['limit'] = get_num(soup.find(text = 'Credit limit').parent.parent.text)
@@ -101,8 +109,7 @@ class CapitalOne(Thread):
 
         r = s.post('https://www.capitaloneonline.co.uk/CapitalOne_Consumer/DownLoadTransaction.do', data=d)
 
-        #filename = time.strftime('%Y%m%d') + '-' + acc['sort'] + '-' + acc['number'] + '.ofx'
-        #file = open(filename, 'w')
-        file = open('cap1.qif', 'w')
+        filename = time.strftime('%Y%m%d') + '-' + 'cap1.qif'
+        file = open(filename, 'w')
         file.write(r.text)
         file.close()
