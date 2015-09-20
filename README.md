@@ -1,4 +1,2 @@
 # pybank
-A Python 3 online banking screen scraper and transaction file downloader, using Requests and BeautifulSoup 4
-
-Written to learn Python - any advice / contributions welcome.
+A command line tool for online banking screen scraping and downloading transaction files for use in other software (e.g. YNAB). Written in python 3 to learn python and due to the lack of UK banking APIs. Uses click for command line integration, requests and BeautifulSoup for screen-scraping, yaml and AppDirs for config files, and tabulate to format output. Currently supports current accounts from Nationwide and TSB, and credit card from Capital One.
