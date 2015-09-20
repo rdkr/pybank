@@ -1,17 +1,23 @@
+### built in
+import operator # sort table
+import os # config paths
 import threading
 
+### setuptools
 import yaml # config file
 import click # cli
-
 from appdirs import AppDirs # config file
-from tabulate import tabulate # click.echo( nice table
-import os
+from tabulate import tabulate # click.echo( nice table )
+
+
 
 #pip install pyyaml appdirs requests beautifulsoup4 tabulate click
 
 dirs = AppDirs("pybank", "rdkr.uk")
 settingsConfigFilename = os.path.join(dirs.user_config_dir, 'settings.yml')
 accountsConfigFilename = os.path.join(dirs.user_config_dir, 'accounts.yml')
+
+accountsConfig = yaml.safe_load(open(accountsConfigFilename))
 
 
 def get_accounts():
@@ -21,7 +27,7 @@ def get_accounts():
 
     # set up lists for accounts and account providers
 
-    for accProvider, accProviderDetails in config.items():
+    for accProvider, accProviderDetails in accountsConfig.items():
 
         exec( 'from banks.' + accProvider + ' import ' + accProvider )
         
@@ -35,9 +41,9 @@ def get_accounts():
         accProviderThread.join()
         accounts.extend(accProviderThread.get_accounts())
 
-    print_table()
+    print_table(accounts)
 
-def print_table():
+def print_table(accounts):
 
     totalAvailable = 0.0
 
@@ -46,26 +52,30 @@ def print_table():
 
     for acc in accounts:
 
-        row = []
+        try:
 
-        # for each table header item, insert entry from each account dictionary to row
-        for entry in header:
-            if entry in acc:
-                row.append(acc[entry])
-            else:
-                row.append('')       
-            
+            row = []
 
-        body.append(row)
+            # for each table header item, insert entry from each account dictionary to row
+            for entry in header:
+                if entry in acc:
+                    row.append(acc[entry])
+                else:
+                    row.append('')       
+                
 
-        totalAvailable += acc['available']
+            body.append(row)
 
-    
+            totalAvailable += acc['available']
+
+        except:
+            pass
+
     footer = ['TOTAL', '', totalAvailable]
 
     table = []
     table.append(header)
-    table.extend(sorted(body, key=itemgetter(0)))
+    table.extend(sorted(body, key=operator.itemgetter(0)))
     table.append(footer)
 
     click.echo()
@@ -75,12 +85,15 @@ def print_table():
 @click.group()
 @click.option('--verbose', is_flag=True, help='Runs in vebrose mode')
 def cli(verbose):
-    pass
+    pass    
+
+@cli.command()
+def get():
+    get_accounts()
 
 @cli.command()
 def setup():
-    click.echo('setup')
-
+    pass
     # if command == 'setup':
     #     setup()
     # else:
@@ -94,6 +107,3 @@ def setup():
     #         accountsConfig = yaml.safe_load(open(accountsConfigFilename))
     #     except:
     #         click.echo('Could not open accounts config (' + accountsConfigFilename + ')')
-
-if __name__ == '__main__':
-    cli()

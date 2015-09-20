@@ -2,7 +2,7 @@ from threading import Thread
 import requests
 import time
 from bs4 import BeautifulSoup
-from get_num import get_num
+from utils import get_num
 
 class Tsb(Thread):
 
@@ -30,7 +30,15 @@ class Tsb(Thread):
         except:
             import traceback
             traceback.print_exc()
-            self.accounts.append({'name': 'error'})
+
+            acc = {'bank': 'TSB'}
+
+            acc['name'] = 'error'
+
+            acc['balance'] = 0
+            acc['available'] = 0
+
+            self.accounts.append(acc)
 
     def get_accounts(self):
         return self.accounts

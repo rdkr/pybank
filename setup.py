@@ -15,5 +15,5 @@ setup(
     entry_points='''
         [console_scripts]
         pybank=pybank:cli
-    ''',
+    '''
 )
